@@ -1,6 +1,8 @@
 /* Porocessor memory map */
 #ifndef _SMDK2440_H
 #define _SMDK2440_H
+
+
 #include "size.h"
 #define ROM_BASE0		0x00000000      /* base address of rom bank 0 */
 #define ROM_BASE1		0x08000000      /* base address of rom bank 1 */
@@ -488,4 +490,5 @@
 #define vEXTINT0		0x22222222
 #define vEXTINT1		0x22222222
 #define vEXTINT2		0x22222222
+
 #endif

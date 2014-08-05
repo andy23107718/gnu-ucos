@@ -1,5 +1,9 @@
 target remote 127.0.0.1:3333
 monitor halt
 monitor arm920t cp15 2 0
-monitor step 
+monitor step
+monitor load_image /home/xianjian/work/arm/initram/init.bin 0x0
+monitor resume 0x0
+monitor halt
+monitor wait_halt
 load

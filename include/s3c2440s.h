@@ -20,6 +20,8 @@
  */
 #ifndef _S3C2440_H
 #define _S3C2440_H
+
+
 #include "mini2440.h"
 //#define CONFIG_DEBUG_LL
 #define CONFIG_SERIAL_UART0
@@ -106,6 +108,7 @@
 #define GET_MDIV(x)		FExtr(x, fMPLL_MDIV)
 #define GET_PDIV(x)		FExtr(x, fMPLL_PDIV)
 #define GET_SDIV(x)		FExtr(x, fMPLL_SDIV)
+
 
 /* GPIO */
 #define GPIO_CTL_BASE		0x56000000
@@ -361,26 +364,7 @@
 #define GET_PRESCALE_TIMER4(x)	FExtr((x), fTCFG0_PRE1)
 #define GET_DIVIDER_TIMER4(x)	FExtr((x), fTCFG1_MUX4)
 
-/*
- * NAND Flash Controller (Page 6-1 ~ 6-8)
- *
- * Register
-   NFCONF   NAND Flash Configuration    [word, R/W, 0x00000000]
-   NFCMD    NAND Flash Command Set      [word, R/W, 0x00000000]
-   NFADDR   NAND Flash Address Set      [word, R/W, 0x00000000]
-   NFDATA   NAND Flash Data             [word, R/W, 0x00000000]
-   NFSTAT   NAND Flash Status           [word, R, 0x00000000]
-   NFECC    NAND Flash ECC              [3 bytes, R, 0x00000000]
- *
- */
-#define bNAND_CTL(Nb)   __REG(0x4e000000 + (Nb))
-#define NFCONF          bNAND_CTL(0x00)
-#define NFCONT          bNAND_CTL(0x04)
-#define NFCMD       bNAND_CTL(0x08)
-#define NFADDR      bNAND_CTL(0x0c)
-#define NFDATA      __REGb(0x4e000000 + (0x10))
-#define NFSTAT      bNAND_CTL(0x20)
-#define NFECC       bNAND_CTL(0x2c)
+
 
 #define fNFCONF_TWRPH1   Fld(3,4)
 #define NFCONF_TWRPH1    FMsk(fNFCONF_TWRPH1)

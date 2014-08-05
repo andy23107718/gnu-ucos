@@ -17,7 +17,6 @@
 	.extern nand_read_ll
 	.global _start 
 	.global PrintChar
-	.global LedControl
 _start:
 
 @****************************************************************
@@ -99,24 +98,7 @@ ResetHandler:
 	@ldr	r2, mpll_value			@ clock default
 	ldr 	r2, =0x5c011			@mpll_value_USER 	@ clock user set
 	str	r2, [r1, #oMPLLCON]
-	bl	memsetup
 
-	@ LED initial
-	mov	r1, #GPIO_CTL_BASE
-	add	r1, r1, #oGPIO_B
-	ldr	r2,=0x00555555
-	str	r2, [r1, #oGPIO_CON]
-	ldr     r2,=0x01ff
-	str	r2, [r1, #oGPIO_UP]
-	mov 	r0,#1
-	bl  	LedControl
-#if 0
-	@ SVC
-	mrs	r0, cpsr
-	bic	r0, r0, #0xdf
-	orr	r1, r0, #0xd3
-	msr	cpsr_all, r1
-#endif
 	@ set GPIO for UART
 	mov	r1, #GPIO_CTL_BASE
 	add	r1, r1, #oGPIO_H
@@ -125,58 +107,44 @@ ResetHandler:
 	ldr	r2, gpio_up_uart
 	str	r2, [r1, #oGPIO_UP]
 	mov 	r0,#2
-	bl   	LedControl
+
 	bl	InitUART
 
-@#ifdef  CONFIG_DEBUG_LL
-#if 1
-	@ Print current Program Counter
-	ldr	r1, SerBase
-	mov	r0, #'\r'
-	bl	PrintChar
-	mov	r0, #'\n'
-	bl	PrintChar
-	mov	r0, #'@'
-	bl	PrintChar
-@	mov	r0, pc
-@	bl	PrintHexWord
-	mov	r0, #'@'
-	bl	PrintChar
-#endif
-	mov 	r0,#2
-	bl   	LedControl
+	/* we do sys-critical inits only at reboot
+	 * not when booting from ram */
+	adr	r0,_start			/*r0 <- current position of code*/	
+	cmp	r0,#0x0				/*don't alloc during debuging*/
+	blne	cpu_init_crit
+	
+	bl	memsetup			/* we run from nandflash*/
 
-@	bl	copy_myself
+	@copy ucos to RAM
+	mov	r0,#0x0
+	ldr	r1,=TEST_RAM
+	mov	r2,#0x100000
 
-#if 1
+	@to call C functions (for copy2ram)
+	ldr	sp, DW_STACK_START
+	bl	copy2ram
+
+cpu_init_crit:
 	mov	r1, #GPIO_CTL_BASE
 	add	r1, r1, #oGPIO_F
 	mov	r2, #0x00
 	str	r2, [r1, #oGPIO_DAT]
-#endif
 
 	bl 	IrqSetup
 	bl 	InitStacks
-	mov 	r0,#5
-	bl   	LedControl
 	ldr 	r0,=0x30100000
 	ldr 	r1,=0x34000000
 @	bl      mem_clear
-	bl	main			@ call main
+	ldr	pc,__main
+
+__main:	.word main
+	@bl	main			@ call main
 	b 	.
+	
 
-@****************************************************************
-@ control led
-@ r0 =
-@****************************************************************
-
-LedControl:
-	mov	r1, #GPIO_CTL_BASE
-	add	r1, r1, #oGPIO_B
-	mov	r0, r0,LSL#5
-	@mov 	r0, 0x60
-	str	r0, [r1, #oGPIO_DAT]
-	mov 	pc,lr
 @****************************************************************
 @ Initialize UART
 @ r0 = number of UART port
@@ -236,7 +204,6 @@ InitUART:
 @ PrintFaultAddr: Print falut address
 @ r12: contains address of instruction + 4
 @****************************************************************
-
 PrintFaultAddr:
 	mov	r0, r12			@ Print address of instruction + 4
 	ldr	r1, SerBase
@@ -255,7 +222,6 @@ PrintFaultAddr:
 @   TODO : write ro with XXX reg to error handling
 @   Falls through to PrintChar
 @****************************************************************
-
 PrintHexNibble:
 	ldr	r2, =HEX_TO_ASCII_TABLE
 	and	r0, r0, #0xF
@@ -401,114 +367,6 @@ InitStacks:
 	msr	cpsr_cxsf,r1		@SVCMode
 	ldr	sp,=SVCStack		@ SVCStack=0x33FF_5800
 	mov	pc,r2
-@***************************************************************
-@                      copyself
-@***************************************************************
-
-
-copy_myself:
-	mov	r10, lr
-	@ reset NAND
-	mov	r1, #NAND_CTL_BASE
-	ldr	r2, =( (7<<12)|(7<<8)|(7<<4)|(0<<0) )
-	str	r2, [r1, #oNFCONF]
-	ldr	r2, [r1, #oNFCONF]
-
-	ldr	r2, =( (1<<4)|(0<<1)|(1<<0) ) @ Active low CE Control
-	str	r2, [r1, #oNFCONT]
-	ldr	r2, [r1, #oNFCONT]
-
-	ldr	r2, =(0x6)		@ RnB Clear
-	str	r2, [r1, #oNFSTAT]
-	ldr	r2, [r1, #oNFSTAT]
-
-	mov	r2, #0xff		@ RESET command
-	strb	r2, [r1, #oNFCMD]
-	mov	r3, #0			@ wait
-1:	add	r3, r3, #0x1
-	cmp	r3, #0xa
-	blt	1b
-2:	ldr	r2, [r1, #oNFSTAT]	@ wait ready
-	tst	r2, #0x4
-	beq	2b
-
-	ldr	r2, [r1, #oNFCONT]
-	orr	r2, r2, #0x2		@ Flash Memory Chip Disable
-	str	r2, [r1, #oNFCONT]
-
-	@ get read to call C functions (for nand_read())
-	ldr	sp, DW_STACK_START	@ setup stack pointer
-	mov	fp, #0			@ no previous frame, so fp=0
-
-	mov	r1, #GPIO_CTL_BASE
-	add	r1, r1, #oGPIO_F
-	mov	r2, #0xe0
-	str	r2, [r1, #oGPIO_DAT]
-
-
-	@ copy ucos to RAM
-	ldr	r0, =TEST_RAM
-	mov     r1, #0x0
-	mov	r2, #0x100000
-	@bl	nand_read_ll
-
-#if 1
-	mov	r1, #GPIO_CTL_BASE
-	add	r1, r1, #oGPIO_F
-	mov	r2, #0xb0
-	str	r2, [r1, #oGPIO_DAT]
-#endif
-
-
-	tst	r0, #0x0
-	beq	ok_nand_read
-#ifdef CONFIG_DEBUG_LL
-bad_nand_read:
-	ldr	r0, STR_FAIL
-	ldr	r1, SerBase
-	bl	PrintWord
-1:	b	1b		@ infinite loop
-#endif
-
-ok_nand_read:
-	@ verify
-	mov	r0, #0
-	ldr	r1, =TEST_RAM
-	mov	r2, #0x200	@ 4 bytes * 1024 = 4K-bytes
-go_next:
-	ldr	r3, [r0], #4
-	ldr	r4, [r1], #4
-	teq	r3, r4
-	bne	notmatch
-	subs	r2, r2, #4
-	beq	done_nand_read
-	bne	go_next
-notmatch:
-#ifdef CONFIG_DEBUG_LL
-@	sub	r0, r0, #4
-@	ldr	r1, SerBase
-@	bl	PrintHexWord
-@	ldr	r0, STR_FAIL
-@	ldr	r1, SerBase
-@	bl	PrintWord
-#endif
-1:	b	1b
-done_nand_read:
-
-#ifdef CONFIG_DEBUG_LL
-	ldr	r0, STR_OK
-	ldr	r1, SerBase
-	bl	PrintWord
-#endif
-
-#if 1
-	mov	r1, #GPIO_CTL_BASE
-	add	r1, r1, #oGPIO_F
-	mov	r2, #0x70
-	str	r2, [r1, #oGPIO_DAT]
-#endif
-
-	mov	pc, r10
 
 
 @***************************************************************

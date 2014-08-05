@@ -37,7 +37,7 @@ CFLAGS := $(CPPFLAGS) -Wall -Wstrict-prototypes -g -Os -fomit-frame-pointer -ffr
 
 AFLAGS :=$(CPPFLAGS)
 export CPPFLAGS CFLAGS AFLAGS
-CORE_FILES	= init/2440init.o init/main.o arm/arm.o lib/lib.o source/core.o 
+CORE_FILES	= init/2440init.o init/main.o init/cpnand.o arm/arm.o lib/lib.o source/core.o 
 SUBDIRS         = arm source lib 
 
 
@@ -63,7 +63,7 @@ CLIBS = -L$(ARM_GCC_LIBS) -L$(ARM_GCC_LIB1) --start-group -lgcc -lgcc_eh -lgcov 
 #laputa symbolic
 LINKFLAGS = -T./ucos.lds -Bstatic
 #LINKFLAGS = -T./ucos.lds 
-ucos:init/2440init.o init/main.o linuxsubdirs
+ucos:init/2440init.o init/main.o init/cpnand.o linuxsubdirs
 	$(LD) $(LINKFLAGS) $(CORE_FILES) -o ucos-elf
 	$(NM)  -l ucos-elf > ucos.map
 	$(OBJDUMP) -S ucos-elf > ucos.d

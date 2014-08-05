@@ -39,6 +39,39 @@ typedef unsigned int size_t;
 #define LONG_MIN	(-LONG_MAX - 1)
 #define ULONG_MAX	(~0UL)
 
+typedef volatile byte	S3C24X0_REG8;
+typedef volatile uint16	S3C24X0_REG16;
+typedef volatile uint32	S3C24X0_REG32;
+
+/*
+ * NAND Flash Controller (Page 6-1 ~ 6-8)
+ * Register
+   NFCONF   NAND Flash Configuration    [word, R/W, 0x00000000]
+   NFCMD    NAND Flash Command Set      [word, R/W, 0x00000000]
+   NFADDR   NAND Flash Address Set      [word, R/W, 0x00000000]
+   NFDATA   NAND Flash Data             [word, R/W, 0x00000000]
+   NFSTAT   NAND Flash Status           [word, R, 0x00000000]
+   NFECC    NAND Flash ECC              [3 bytes, R, 0x00000000]
+ */
+/* NAND FLASH (see S3C2440 manual chapter 6) */
+typedef struct {
+    S3C24X0_REG32   NFCONF;
+    S3C24X0_REG32   NFCONT;
+    S3C24X0_REG32   NFCMD;
+    S3C24X0_REG32   NFADDR;
+    S3C24X0_REG32   NFDATA;
+    S3C24X0_REG32   NFMECCD0;
+    S3C24X0_REG32   NFMECCD1;
+    S3C24X0_REG32   NFSECCD;
+    S3C24X0_REG32   NFSTAT;
+    S3C24X0_REG32   NFESTAT0;
+    S3C24X0_REG32   NFESTAT1;
+    S3C24X0_REG32   NFMECC0;
+    S3C24X0_REG32   NFMECC1;
+    S3C24X0_REG32   NFSECC;
+    S3C24X0_REG32   NFSBLK;
+    S3C24X0_REG32   NFEBLK;
+} /*__attribute__((__packed__))*/ S3C2440_NAND;
 
 #define ESC_KEY	('q')	// 0x1b
 #endif /*__DEF_H__*/
