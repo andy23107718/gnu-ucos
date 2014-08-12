@@ -1,11 +1,24 @@
-OUTPUT_ARCH(arm)
+OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 
 ENTRY(_start)
 
-SECTIONS { 
+SECTIONS 
+{
 	. = 0x30000000;
-  	.text          : { *(.text) }
-  	.rodata ALIGN(4):{  *(.rodata)}
-  	.data ALIGN(4) : { *(.data) }
-  	.bss ALIGN(4)  : { *(.bss)  *(COMMON) }
-} 
+
+	. = ALIGN(4);
+	.text      :
+	{
+		init/2440init.o		(.text)
+		init/cpnand.o 		(.text)
+		*(.text)
+	}
+
+	. = ALIGN(4);
+	.rodata : { *(.rodata) }
+
+	. = ALIGN(4);
+	.data : { *(.data) }
+
+	.bss ALIGN(4)  : { *(.bss)  *(COMMON) }
+}

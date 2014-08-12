@@ -65,6 +65,41 @@ void ChangeSdramParameter(char port, int minrc, int minrcd, int minrp, int refre
 void ChangeSromParameter(char bank, char minacc);
 void LcdBkLtSet(uint32 HiRatio);//lcd
 
+
+
+///nandflash functions	(ramdom)read,write erase
+UINT8  	nand_writepage(UINT32 page_number,UINT8  *buffer,UINT32  size);
+UINT8  	nand_markbadblock(UINT32 block);
+UINT8  	nand_is_badblk(UINT32 block);
+UINT8 	nand_ramdom_read(UINT32 page_number,UINT32 add);
+UINT8  	nand_ramdom_write(UINT32  page_number,UINT32 add,UINT8  dat);
+UINT8   nand_eraseblock(UINT32  block_number);
+void 	write_data8(UINT8  data);
+void 	nand_deselect_chip(void);
+void  	nand_select_chip(void);
+void  	wait_idle(void);
+void 	write_addr_lp(unsigned int addr);
+void 	write_addr(UINT8 addr);
+void 	write_cmd(unsigned char cmd);
+UINT32 	read_data(void);
+UINT8   read_data8(void);
+void 	nand_clr_RnB(void);
+void 	nand_rst_ECC(void);
+void 	nand_mecc_unlock(void);
+void 	nand_mecc_lock(void);
+void 	nand_secc_unlock(void);
+void 	nand_secc_lock(void);
+UINT8   nand_read_3(unsigned long start_addr,unsigned char *buffer,UINT32 size);
+void 	nand_read_ll(unsigned char *buffer,unsigned long start_addr, int size);
+void 	nand_reset(void);
+void 	nand_init_ll(void);
+void 	nand_readID(UINT8 *idbuf);
+
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

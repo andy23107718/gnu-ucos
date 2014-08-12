@@ -49,8 +49,44 @@ void MainTask(void *pdata) //Main Task create taks0 and task1
 	}
 }
 
+void nand_test(void)
+{
+	UINT8	buff[2048];
+	int	i;
+
+	for(i = 0;i < 2048;i ++)
+		buff[i]	= i & 0xff;
+
+	nand_init_ll();
+
+	printf("erase result is %x\r\n",nand_eraseblock(8));
+
+	printf("write result is %x\r\n",nand_writepage(515,buff,2048));
+
+	for(i = 0;i < 2048;i ++)
+		buff[i]	= 0x0;
+	printf("read result is %x\r\n",nand_read_3(515 * 2048,buff,2048));
+	
+	for(i = 0;i < 4;i ++){
+		printf("%2x ",buff[i]);
+	}
+
+	nand_ramdom_write(514,2048 - 33,0xf4);
+	printf("result is :%x \r\n",nand_ramdom_read(514,2048 - 33));
+
+	nand_readID(buff);
+		
+	printf("nand ID is :");
+	for(i = 0;i < 5;i ++)
+		printf("%x ",buff[i]);		
+	printf("\r\n");
+}
+
 void Task0(void *pdata)
 {
+#if 1
+	nand_test();
+#endif
 	while (1)
 	{
 		printf("Task0");

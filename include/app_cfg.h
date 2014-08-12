@@ -11,7 +11,7 @@ by: tangxiaofeng xidian 503
 //Task Stk lengh
 
 #define	MainTaskStkLengh	1024*2   	// Define the MainTask stack length 
-#define	Task0StkLengh		1024     	// Define the Task0 stack length 
+#define	Task0StkLengh		1024*8     	// Define the Task0 stack length 
 #define	Task1StkLengh		1024*2   	// Define the Task1 stack length 
 #define	Task2StkLengh		1024*2   	// Define the Task2 stack length 
 #define	TaskUartStkLengh	1024    	// Define the TaskUart stack length 

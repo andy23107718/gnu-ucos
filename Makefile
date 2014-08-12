@@ -37,8 +37,8 @@ CFLAGS := $(CPPFLAGS) -Wall -Wstrict-prototypes -g -Os -fomit-frame-pointer -ffr
 
 AFLAGS :=$(CPPFLAGS)
 export CPPFLAGS CFLAGS AFLAGS
-CORE_FILES	= init/2440init.o init/main.o init/cpnand.o arm/arm.o lib/lib.o source/core.o 
-SUBDIRS         = arm source lib 
+CORE_FILES	= init/2440init.o init/main.o init/cpnand.o arm/arm.o lib/lib.o source/core.o device/device.o
+SUBDIRS         = arm source lib device
 
 
 CLEAN_FILES = \

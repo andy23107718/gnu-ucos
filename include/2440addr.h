@@ -121,7 +121,9 @@ extern "C" {
 #define rNFCONF		(*(volatile unsigned *)0x4E000000)		//NAND Flash configuration
 #define rNFCONT		(*(volatile unsigned *)0x4E000004)      //NAND Flash control
 #define rNFCMD		(*(volatile unsigned *)0x4E000008)      //NAND Flash command
+#define rNFCMD8		(*(volatile unsigned char *)0x4E000008)      //NAND Flash command
 #define rNFADDR		(*(volatile unsigned *)0x4E00000C)      //NAND Flash address
+#define rNFADDR8	(*(volatile unsigned char *)0x4E00000C)      //NAND Flash address
 #define rNFDATA		(*(volatile unsigned *)0x4E000010)      //NAND Flash data
 #define rNFDATA8	(*(volatile unsigned char *)0x4E000010)     //NAND Flash data
 //#define NFDATA		(0x4E000010)      //NAND Flash data address
