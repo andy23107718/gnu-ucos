@@ -5,6 +5,7 @@
 #include "target.h"
 #include "2440addr.h"
 #include "appdef.h"
+#include "printf.h"
 
 OS_STK  MainTaskStk[MainTaskStkLengh];
 OS_STK	Task0Stk [Task0StkLengh];       // Define the Task0 stack
@@ -17,25 +18,12 @@ uint32	count=10;
 
 int main(void);
 
-void write_rec(byte data)
-{
-	while( (rUTRSTAT0 & 0x04) != 0x04 );
-
-	rUTXH0 = data;  
-}
-
-void write_string(char *pdata)
-{
-	for( ;*pdata; pdata ++)
-		write_rec((byte)(*pdata));
-}
 
 int main()
 {
 	TargetInit();
 	OSInit ();
 	OSTimeSet(0);
-	write_string("main");
 	OSTaskCreate (MainTask,(void *)0, &MainTaskStk[MainTaskStkLengh - 1], MainTaskPrio);
 	OSStart ();
 
@@ -52,7 +40,6 @@ void MainTask(void *pdata) //Main Task create taks0 and task1
 	TickISRInit();   					//initial interrupt prio or enable or disable
 	OS_EXIT_CRITICAL();
 
-	write_string("mainTask");
 	OSTaskCreate (Task0,(void *)0, &Task0Stk[Task0StkLengh - 1], Task0Prio);
 	OSTaskCreate (Task1,(void *)0, &Task1Stk[Task1StkLengh - 1], Task1Prio);
 	OSTaskCreate (Task2,(void *)0, &Task2Stk[Task2StkLengh - 1], Task2Prio);
@@ -66,7 +53,7 @@ void Task0(void *pdata)
 {
 	while (1)
 	{
-		write_string("Task0");
+		printf("Task0");
 		OSTimeDly(OS_TICKS_PER_SEC);
 	}
 }
@@ -79,8 +66,9 @@ void Task1(void *pdata)
 
 	while (1)
 	{
+		printf("main");
 		TestCnt++;
-		write_string("task1");
+		printf("task1");
 		if(TestCnt%2)
 			rGPBDAT = 0x0000;
 		else

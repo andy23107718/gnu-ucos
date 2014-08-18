@@ -26,6 +26,9 @@
 tags
 cscope.*
 
+*.flags
+*.swp
+
 # output files
 *.d
 *.t

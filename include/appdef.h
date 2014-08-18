@@ -22,6 +22,23 @@ typedef	char		int8;
 #define FAIL	0
 
 
+#ifndef NULL
+#define         NULL    0
+#endif
+
+typedef	unsigned int	UINT32;
+typedef	unsigned short	UINT16;
+typedef	unsigned char	UINT8;
+
+typedef unsigned int size_t;
+
+#define INT_MAX		((int)(~0U>>1))
+#define INT_MIN		(-INT_MAX - 1)
+#define UINT_MAX	(~0U)
+#define LONG_MAX	((long)(~0UL>>1))
+#define LONG_MIN	(-LONG_MAX - 1)
+#define ULONG_MAX	(~0UL)
+
+
 #define ESC_KEY	('q')	// 0x1b
 #endif /*__DEF_H__*/
-
