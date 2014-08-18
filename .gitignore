@@ -21,3 +21,17 @@
 *.i*86
 *.x86_64
 *.hex
+
+# ctags cscope files
+tags
+cscope.*
+
+# output files
+*.d
+*.t
+ucos-elf
+ucos
+ucos.nm
+ucos.map
+ucos.dis
+ucos.bin
