@@ -16,8 +16,9 @@ int 	rYear, rMonth,rDay,rDayOfWeek,rHour,rMinute,rSecond;
 char 	banner[]="******Welcome To UCOS******";
 uint32	count=10;
 
-int main(void);
 
+
+int main(void);
 
 int main()
 {
@@ -66,7 +67,7 @@ void nand_test(void)
 	for(i = 0;i < 2048;i ++)
 		buff[i]	= 0x0;
 	printf("read result is %x\r\n",nand_read_3(515 * 2048,buff,2048));
-	
+
 	for(i = 0;i < 4;i ++){
 		printf("%2x ",buff[i]);
 	}
@@ -75,7 +76,7 @@ void nand_test(void)
 	printf("result is :%x \r\n",nand_ramdom_read(514,2048 - 33));
 
 	nand_readID(buff);
-		
+
 	printf("nand ID is :");
 	for(i = 0;i < 5;i ++)
 		printf("%x ",buff[i]);		
@@ -84,12 +85,13 @@ void nand_test(void)
 
 void Task0(void *pdata)
 {
-#if 1
+#if 0
 	nand_test();
 #endif
+	printf("%s\n",banner);
 	while (1)
 	{
-		printf("Task0");
+		printf("Task0\r\n");
 		OSTimeDly(OS_TICKS_PER_SEC);
 	}
 }
@@ -98,18 +100,30 @@ void Task1(void *pdata)
 {
 	uint16	TestCnt=0;
 	uint16 Version;
+
+	UINT32	bak_color[] = {0x0,0xffffff,0xff,0xff00,0xff0000,0xffff,0xff00ff};
+	UINT32	cir_color[] = {0xffffff,0x0,0xffff00,0xff00ff,0xffff,0xff0000,0xff00};
+	UINT8	i;
 	Version=OSVersion();
+
+	lcd_init();
+
+	rLCDCON1|=1;                   //LCD开启
 
 	while (1)
 	{
-		printf("main");
-		TestCnt++;
-		printf("task1");
-		if(TestCnt%2)
-			rGPBDAT = 0x0000;
-		else
-			rGPBDAT = 0x07fe;
-		OSTimeDly(OS_TICKS_PER_SEC);
+		for(i = 0;i < sizeof(bak_color)/sizeof(UINT32);i ++) {
+			TestCnt++;
+			printf("task1\r\n");
+			if(TestCnt%2)
+				rGPBDAT = 0x0000;
+			else
+				rGPBDAT = 0x07fe;
+
+			Brush_Background(bak_color[i]);
+			Draw_Circular(cir_color[i]);
+			OSTimeDly(OS_TICKS_PER_SEC);
+		}
 	}
 }
 

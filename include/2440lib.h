@@ -96,6 +96,9 @@ void 	nand_init_ll(void);
 void 	nand_readID(UINT8 *idbuf);
 
 
+void	lcd_init(void);
+void 	Brush_Background( U32 c);
+void 	Draw_Circular(U32 c);
 
 
 

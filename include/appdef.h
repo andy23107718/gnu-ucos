@@ -30,6 +30,8 @@ typedef	unsigned int	UINT32;
 typedef	unsigned short	UINT16;
 typedef	unsigned char	UINT8;
 
+typedef	UINT32		U32;
+
 typedef unsigned int size_t;
 
 #define INT_MAX		((int)(~0U>>1))

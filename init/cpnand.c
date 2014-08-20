@@ -161,7 +161,7 @@ void nand_init_ll(void)
 {
 	rGPACON = (rGPACON &~(0x3f<<17)) | (0x3f<<17);            //配置芯片引脚
 
-#define TACLS   0
+#define TACLS   1
 #define TWRPH0  3
 #define TWRPH1  0
 
