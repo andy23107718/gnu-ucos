@@ -6,6 +6,7 @@
 #include "2440addr.h"
 #include "appdef.h"
 #include "printf.h"
+#include "data.h"
 
 OS_STK  MainTaskStk[MainTaskStkLengh];
 OS_STK	Task0Stk [Task0StkLengh];       // Define the Task0 stack
@@ -110,6 +111,8 @@ void Task1(void *pdata)
 
 	rLCDCON1|=1;                   //LCD开启
 
+	paint_bmp(0,0,LCD_WIDTH,LCD_HEIGHT,bmp_data);
+
 	while (1)
 	{
 		for(i = 0;i < sizeof(bak_color)/sizeof(UINT32);i ++) {
@@ -120,8 +123,8 @@ void Task1(void *pdata)
 			else
 				rGPBDAT = 0x07fe;
 
-			Brush_Background(bak_color[i]);
-			Draw_Circular(cir_color[i]);
+			/*Brush_Background(bak_color[i]);
+			Draw_Circular(cir_color[i]);*/
 			OSTimeDly(OS_TICKS_PER_SEC);
 		}
 	}
