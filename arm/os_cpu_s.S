@@ -2,6 +2,7 @@
  .equ INTPND ,  0x4a000010    @ Interrupt rest status
  .equ rEINTPEND ,    0x560000a8
  .equ INTOFFSET  ,   0x4a000014
+ .equ INTMSK	   ,0x4a000008
  .equ USERMODE     , 	0x10
  .equ FIQMODE      ,	0x11
  .equ IRQMODE      ,	0x12
@@ -11,6 +12,7 @@
  .equ MODEMASK     ,	0x1f
  .equ NOINT        ,	0xc0
  .equ IRQ_STARTADDRESS,  0x33ffff00
+
 	.extern  OSRunning
 	.extern  OSTCBCur
 	.extern  OSTCBHighRdy
@@ -107,20 +109,9 @@ OSCtxSw:
 	LDMFD 	SP!, {R0}		@POP CPSR
 	MSR 	SPSR_cxsf, R0
 	LDMFD   SP!, {R0-R12, LR, PC}^
+
 OSTickISR:
 	MOV     R5,LR
-	MOV 	R1, #1
-	MOV	R1, R1, LSL #10		@ Timer0 Source Pending Reg.
-	LDR 	R0, =SRCPND
-	LDR     R2, [R0]
-	ORR     R2, R1,R2
-	STR 	R2, [R0]
-
-	LDR	R0, =INTPND
-	LDR	R2, [R0]
-	ORR     R2, R1,R2
-	STR	R2, [R0]
-
 	@----------------------------------------------------------------------------------
 	@ OSTimeTick()@
 	@----------------------------------------------------------------------------------
@@ -198,7 +189,11 @@ OS_CPU_IRQ_ISR:
 	MSR    CPSR_c,#IRQMODE|NOINT   @ tox use IRQ stack to handle interrupt
 	LDR     R0, =INTOFFSET
         LDR     R0, [R0]
-	CMP	R0, #0xa
+	LDR     R1, =INTMSK
+	LDR     R1, [R1]
+	MOV     R3, #1
+	LSL     R4, R3,R0
+	TST     R4, R1
 	BNE	2f
 	
    	LDR     R1, =IRQ_STARTADDRESS
@@ -210,10 +205,15 @@ OS_CPU_IRQ_ISR:
         LDR     R0, [R0]
 	MOV     R1, #1
 	MOV     R1, R1, LSL R0
-	LDR     R0, =SRCPND				
-	STR     R1, [R0]
+	LDR     R0, =SRCPND
+	LDR     R2, [R0]
+	ORR     R2, R1,R2
+	STR     R2, [R0]
+
 	LDR     R0, =INTPND	
-	STR     R1, [R0]	
+	LDR     R2, [R0]
+	ORR     R2, R1,R2
+	STR     R2, [R0]	
 	
 	MSR		CPSR_c,#SVCMODE|NOINT
     	BL 		OSIntExit
