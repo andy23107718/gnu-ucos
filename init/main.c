@@ -86,14 +86,40 @@ void nand_test(void)
 
 void Task0(void *pdata)
 {
+	UINT32	pwm_freq;
 #if 0
 	nand_test();
 #endif
 	printf("%s\n",banner);
+
+	rGPBCON = (rGPBCON & ~0x3) | 0x2;
+
+	pwm_freq = 3906;
+
+	///Timer0 work freq 781250
+	rTCNTB0 = 7812;
+	rTCMPB0 = pwm_freq;
+
+	rTCON &= ~0x1F;       
+	rTCON |= 0xf;              	//死区无效，自动装载，电平反转，手动更新，定时器开启
+	rTCON &= ~0x2 ;  		//手动更新位清零，PWM开始工作
+
 	while (1)
 	{
+		for ( ; pwm_freq <7800; )
+		{
+
+			pwm_freq +=10;
+			rTCMPB0 = pwm_freq ;          //重新赋值
+			OSTimeDly(OS_TICKS_PER_SEC/4);
+		}
+		for( ; pwm_freq >50 ; )
+		{
+			pwm_freq -= 10;
+			rTCMPB0 = pwm_freq;
+			OSTimeDly(OS_TICKS_PER_SEC/4);
+		}
 		printf("Task0\r\n");
-		OSTimeDly(OS_TICKS_PER_SEC);
 	}
 }
 

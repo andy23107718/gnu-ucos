@@ -1,9 +1,9 @@
-/* ��ʼ��mini2440Ŀ��� 
-   1. �趨ϵͳ����ʱ��Ƶ��
-   2. �˿ڳ�ʼ��
-   3. MMU��ʼ��
-   4. ���ڳ�ʼ��
-   5. LEDָʾ�Ƴ�ʼ��
+/* 初始化mini2440目标板 
+   1. 设定系统运行时钟频率
+   2. 端口初始化
+   3. MMU初始化
+   4. 串口初始化
+   5. LED指示灯初始化
  */
 #include "2440lib.h"
 #include "2440addr.h"
@@ -57,7 +57,7 @@ void TargetInit(void)
 	//Delay(0);
 	//    Uart_Init(0,115200);
 	//Uart_Select(0);
-	/*��ʹ��printf��䣬��ʹĿ��������Ӻܶ�*/
+	/*若使用printf语句，将使目标代码增加很多*/
 	// Uart_Printf("hello,qq2440, printf\n");
 	rGPBDAT = 0x02<<5;
 	//   rGPBDAT = 0x07ff;
@@ -75,13 +75,13 @@ void Rtc_Init(void)
 	wMinute = 41;
 	wSecond = 30;
 	rRTCCON = 1 ;		//RTC read and write enable
-	rBCDYEAR = (unsigned char)TO_BCD(wYear%100);	//��
-	rBCDMON  = (unsigned char)TO_BCD(wMonth);		//��
-	rBCDDAY	 = (unsigned char)TO_BCD(wDay);			//��	
-	rBCDDATE = wDayOfWeek+1;				//����
-	rBCDHOUR = (unsigned char)TO_BCD(wHour);		//Сʱ
-	rBCDMIN  = (unsigned char)TO_BCD(wMinute);		//��
-	rBCDSEC  = (unsigned char)TO_BCD(wSecond);		//��
+	rBCDYEAR = (unsigned char)TO_BCD(wYear%100);	//年
+	rBCDMON  = (unsigned char)TO_BCD(wMonth);		//月
+	rBCDDAY	 = (unsigned char)TO_BCD(wDay);			//日	
+	rBCDDATE = wDayOfWeek+1;				//星期
+	rBCDHOUR = (unsigned char)TO_BCD(wHour);		//小时
+	rBCDMIN  = (unsigned char)TO_BCD(wMinute);		//分
+	rBCDSEC  = (unsigned char)TO_BCD(wSecond);		//秒
 
 	rRTCCON &= ~1 ;		//RTC read and write disable
 }
@@ -90,18 +90,19 @@ void Rtc_Init(void)
  ********************************************************************************************************/
 void Timer0Init(void)
 {
-	// ��ʱ������
-	rTCON = rTCON & (~0xf) ;			// clear manual update bit, stop Timer0
+	// 定时器设置
+	rTCON &= ~(0xf<<8);					// clear manual update bit, stop Timer0
 
 	rTCFG0 	&= 0xffffff00;					// set Timer 0&1 prescaler 0
 	rTCFG0 |= 15;							//prescaler = 15+1
 
 	rTCFG1 	&= 0xfffffff0;					// set Timer 0 MUX 1/4
 	rTCFG1  |= 0x00000001;					// set Timer 0 MUX 1/4
-	rTCNTB0 = (PCLK / (4 *15* OS_TICKS_PER_SEC)) - 1;
 
-	rTCON = (rTCON & (~0xf)) |0x02;              	// updata 		
-	rTCON = (rTCON & (~0xf)) |0x09; 			// star
+	rTCNTB1 = (PCLK / (4 *15* OS_TICKS_PER_SEC)) - 1;
+
+	rTCON = (rTCON & (~(0xf<<8))) |(0x02<<8);              	// updata 		
+	rTCON = (rTCON & (~(0xf<<8))) |(0x09<<8); 		// star
 }
 
 /*********************************************************************************************************
@@ -113,12 +114,11 @@ extern void CLR_IF(void);
 
 void TickISRInit(void)
 {
-	// �����жϿ�����
-	rPRIORITY = 0x00000000;		// ʹ��Ĭ�ϵĹ̶������ȼ�
-	rINTMOD = 0x00000000;		// �����жϾ�ΪIRQ�ж�
+	// 设置中断控制器
+	rPRIORITY = 0x00000000;		// 使用默认的固定的优先级
+	rINTMOD = 0x00000000;		// 所有中断均为IRQ中断
 
-	pIRQ_TIMER0=(uint32)OSTickISR;
-	rINTMSK &= ~(1<<10);			// ��TIMER0�ж�����
+	pIRQ_TIMER1 = (uint32)OSTickISR;
+	rINTMSK &= ~(1<<11);			// 打开TIMER0中断允许
 	CLR_IF();
-	//	OSTime=0;
 }
