@@ -63,6 +63,7 @@ void TargetInit(void)
 	//   rGPBDAT = 0x07ff;
 	//  Delay(0);
 	init_key();
+	init_wtdog();
 }
 
 void Rtc_Init(void)
@@ -132,15 +133,17 @@ void init_key(void)
 	rEXTINT0	&= ~0x70777;
 	rEXTINT0	|= 0x20222;
 
-	pIRQ_EINT0	= (uint32)key_int0;
+	pIRQ_EINT0	= (uint32)key_int4;
 	pIRQ_EINT1	= (uint32)key_int1;
 	pIRQ_EINT2	= (uint32)key_int3;
 	pIRQ_EINT4_7	= (uint32)eint4_7;
 }
 
-void key_int0(void)
+
+//key4 feed watchwog
+void key_int4(void)
 {
-	
+	rWTCNT	= 0xb70c;
 }
 
 void key_int1(void)
@@ -171,4 +174,13 @@ void eint4_7(void)
 			break;
 		}
 	}
+}
+
+
+void init_wtdog(void)
+{
+	rWTCON	= 0xf939;		///enable reset;divider=128; Prescaler=0xf9=249
+
+	rWTDAT	= 0xb70c;		/// 30s
+	rWTCNT	= 0xb70c; 
 }

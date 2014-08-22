@@ -104,7 +104,7 @@ void 	paint_bmp(int x0,int y0,int h,int l,unsigned char bmp[]);
 void 	ostickisr(void);
 void 	CLR_IF(void);
 void 	init_key(void);
-void 	key_int0(void);
+void 	key_int4(void);
 void 	key_int1(void);
 void 	key_int3(void);
 void 	eint4_7(void);
