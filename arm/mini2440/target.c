@@ -62,6 +62,7 @@ void TargetInit(void)
 	rGPBDAT = 0x02<<5;
 	//   rGPBDAT = 0x07ff;
 	//  Delay(0);
+	init_key();
 }
 
 void Rtc_Init(void)
@@ -108,10 +109,6 @@ void Timer0Init(void)
 /*********************************************************************************************************
   system IsrInit
  ********************************************************************************************************/
-extern void OSTickISR(void);
-//INT32U  OSTime;		///	gudujian
-extern void CLR_IF(void);
-
 void TickISRInit(void)
 {
 	// 设置中断控制器
@@ -119,6 +116,59 @@ void TickISRInit(void)
 	rINTMOD = 0x00000000;		// 所有中断均为IRQ中断
 
 	pIRQ_TIMER1 = (uint32)OSTickISR;
-	rINTMSK &= ~(1<<11);			// 打开TIMER0中断允许
+	rINTMSK &= ~(1<<11);			// 打开TIMER1中断允许
 	CLR_IF();
+}
+
+
+void init_key(void)
+{
+	rGPFCON	&= ~0x33f;
+	rGPFCON	|= 0x22a;
+
+	rINTMSK &= ~( (1<<0)|(1<<1)|(1<<2)|(1<<4));		/// enable eint
+	rEINTMASK	&= ~(1<<4);				/// enable eint4
+
+	rEXTINT0	&= ~0x70777;
+	rEXTINT0	|= 0x20222;
+
+	pIRQ_EINT0	= (uint32)key_int0;
+	pIRQ_EINT1	= (uint32)key_int1;
+	pIRQ_EINT2	= (uint32)key_int3;
+	pIRQ_EINT4_7	= (uint32)eint4_7;
+}
+
+void key_int0(void)
+{
+	
+}
+
+void key_int1(void)
+{
+	
+}
+
+void key_int3(void)
+{
+	
+}
+
+void eint4_7(void)
+{
+	UINT32 eintpnd;
+	UINT8	index;
+
+	eintpnd	= rEINTPEND;
+
+	for(index = 4;index < 24;index ++){
+		if(eintpnd & (1<<index)){
+			if(index == 4){
+				//rTCON &= ~0x8;          //禁止定时器自动重载，即关闭定时器
+				rGPBCON = (rGPBCON & ~0x3) | 0x1;
+				rGPBDAT &= ~0x1;	
+			}
+			rEINTPEND |= 1<<index;
+			break;
+		}
+	}
 }

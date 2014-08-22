@@ -96,7 +96,7 @@ void Draw_Circular(U32 c)
 
 void paint_bmp(int x0,int y0,int h,int l,unsigned char bmp[])
 {
-	int x,y,k=0;
+	int x,y;
 	U32 c;
 	int p = 0;
 
