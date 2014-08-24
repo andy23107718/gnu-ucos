@@ -6,23 +6,19 @@
 #include "2440addr.h"
 #include "appdef.h"
 #include "printf.h"
-#include "data.h"
 
 OS_STK  MainTaskStk[MainTaskStkLengh];
 OS_STK	Task0Stk [Task0StkLengh];       // Define the Task0 stack
 OS_STK	Task1Stk [Task1StkLengh];       // Define the Task1 stack
 OS_STK	Task2Stk [Task2StkLengh];       // Define the Task1 stack
 
-int 	rYear, rMonth,rDay,rDayOfWeek,rHour,rMinute,rSecond;
-char 	banner[]="******Welcome To UCOS******";
-uint32	count=10;
-
-
-
 int main(void);
 
 int main()
 {
+	count=10;
+	os_banner = "Welcome To UCOS******";
+
 	TargetInit();
 	OSInit ();
 	OSTimeSet(0);
@@ -84,15 +80,30 @@ void nand_test(void)
 	printf("\r\n");
 }
 
+void 	i2c_test(void)
+{
+	UINT8 buf[32],i;
+
+	for(i = 0;i < 8;i ++)
+		buf[i]	= i;
+	wr24c02a(0x23,buf,4);
+	
+	for(i = 0;i < 8;i ++)
+		buf[i]	= 0;
+	rd24c02a(0x23,buf,4);
+
+	printf("%d %d %d %d\n",buf[0],buf[1],buf[2],buf[3]);	
+}
+
 void Task0(void *pdata)
 {
 	UINT32	pwm_freq;
 #if 0
 	nand_test();
 #endif
-	printf("%s\n",banner);
+	printf("%s\n",os_banner);
 
-	rGPBCON = (rGPBCON & ~0x3) | 0x2;
+	//rGPBCON = (rGPBCON & ~0x3) | 0x2;
 
 	pwm_freq = 3906;
 
@@ -160,6 +171,9 @@ void Task2(void *pdata)
 {
 	int i=0;
 
+	printf("befor i2c test\r\n");
+	i2c_test();
+	printf("after i2c test\r\n");
 	while(1)
 	{
 		i++;

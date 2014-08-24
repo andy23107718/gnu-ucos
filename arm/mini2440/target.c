@@ -11,7 +11,9 @@
 #include "ucos_ii.h"
 #include "target.h"
 
-void TargetInit(void)
+extern volatile UINT8	i2cflag;
+
+void __attribute__((optimize("O0"))) TargetInit(void)
 {
 	int i;
 	byte  key;
@@ -64,6 +66,7 @@ void TargetInit(void)
 	//  Delay(0);
 	init_key();
 	init_wtdog();
+	init_i2c();
 }
 
 void Rtc_Init(void)
@@ -176,6 +179,10 @@ void eint4_7(void)
 	}
 }
 
+void i2c_isr(void)
+{
+	i2cflag	= 0;
+}
 
 void init_wtdog(void)
 {
@@ -183,4 +190,16 @@ void init_wtdog(void)
 
 	rWTDAT	= 0xb70c;		/// 30s
 	rWTCNT	= 0xb70c; 
+}
+
+void init_i2c(void)
+{
+	rGPEUP  |= 0xc000;                  	//Pull-up disable    	
+	rGPECON |= 0xa0000000;                	//GPE15:IICSDA , GPE14:IICSCL     
+  	//rGPECON |= 0xa00000;
+
+	rINTMSK &= ~(1<<27);			/// enable i2c
+	rIICCON  = 0xe0;                        //设置IIC时钟频率，使能应答信号，并开启中断
+	rIICSTAT = 0x10;
+	pIRQ_IIC = (UINT32)i2c_isr;
 }

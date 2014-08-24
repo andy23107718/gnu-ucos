@@ -1,6 +1,6 @@
-#define  OS_GLOBALS               
+#define  OS_GLOBALS
 #include <ucos_ii.h>
-#define  OS_MASTER_FILE                      
+#define  OS_MASTER_FILE
 #include "os_core.c"
 #include "os_flag.c"
 #include "os_mbox.c"

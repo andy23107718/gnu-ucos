@@ -31,7 +31,8 @@ extern "C" {
 *********************************************************************************************************
 *                                           INCLUDE HEADER FILES
 *********************************************************************************************************
-*/
+*/
+
 #include "os_cfg_r.h"
 #include "os_cpu.h"
 #include "os_cpu_s.h"
@@ -55,6 +56,8 @@ extern "C" {
 #ifndef  OS_TRUE
 #define  OS_TRUE                         1u
 #endif
+
+#include "data.h"
 
 #define  OS_ASCII_NUL          (INT8U)0
 

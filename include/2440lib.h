@@ -101,6 +101,11 @@ void 	Brush_Background( U32 c);
 void 	Draw_Circular(U32 c);
 void 	paint_bmp(int x0,int y0,int h,int l,unsigned char bmp[]);
 
+void 	wr24c02a(UINT8 wordAddr,UINT8 *buffer,UINT32 sizeofdate);
+void 	rd24c02a(UINT8 wordAddr,UINT8 *buffer,UINT32 sizeofdate);
+
+
+
 void 	ostickisr(void);
 void 	CLR_IF(void);
 void 	init_key(void);
@@ -108,6 +113,11 @@ void 	key_int4(void);
 void 	key_int1(void);
 void 	key_int3(void);
 void 	eint4_7(void);
+
+void 	init_wtdog(void);
+
+void 	i2c_isr(void);
+void 	init_i2c(void);
 
 
 #ifdef __cplusplus
