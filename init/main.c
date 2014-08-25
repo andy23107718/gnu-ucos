@@ -47,54 +47,6 @@ void MainTask(void *pdata) //Main Task create taks0 and task1
 	}
 }
 
-void nand_test(void)
-{
-	UINT8	buff[2048];
-	int	i;
-
-	for(i = 0;i < 2048;i ++)
-		buff[i]	= i & 0xff;
-
-	nand_init_ll();
-
-	printf("erase result is %x\r\n",nand_eraseblock(8));
-
-	printf("write result is %x\r\n",nand_writepage(515,buff,2048));
-
-	for(i = 0;i < 2048;i ++)
-		buff[i]	= 0x0;
-	printf("read result is %x\r\n",nand_read_3(515 * 2048,buff,2048));
-
-	for(i = 0;i < 4;i ++){
-		printf("%2x ",buff[i]);
-	}
-
-	nand_ramdom_write(514,2048 - 33,0xf4);
-	printf("result is :%x \r\n",nand_ramdom_read(514,2048 - 33));
-
-	nand_readID(buff);
-
-	printf("nand ID is :");
-	for(i = 0;i < 5;i ++)
-		printf("%x ",buff[i]);		
-	printf("\r\n");
-}
-
-void 	i2c_test(void)
-{
-	UINT8 buf[32],i;
-
-	for(i = 0;i < 8;i ++)
-		buf[i]	= i;
-	wr24c02a(0x23,buf,4);
-	
-	for(i = 0;i < 8;i ++)
-		buf[i]	= 0;
-	rd24c02a(0x23,buf,4);
-
-	printf("%d %d %d %d\n",buf[0],buf[1],buf[2],buf[3]);	
-}
-
 void Task0(void *pdata)
 {
 	UINT32	pwm_freq;
@@ -171,9 +123,12 @@ void Task2(void *pdata)
 {
 	int i=0;
 
-	printf("befor i2c test\r\n");
 	i2c_test();
-	printf("after i2c test\r\n");
+
+	for(i = 0;i < 3000;i ++){
+		printf("%x\r\n",readADC(2));
+		OSTimeDly(OS_TICKS_PER_SEC);
+	}
 	while(1)
 	{
 		i++;

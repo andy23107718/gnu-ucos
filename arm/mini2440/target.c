@@ -5,11 +5,12 @@
    4. 串口初始化
    5. LED指示灯初始化
  */
-#include "2440lib.h"
 #include "2440addr.h"
 #include "s3c2440s.h"
 #include "ucos_ii.h"
+#include "os_cpu.h"
 #include "target.h"
+#include "2440lib.h"
 
 extern volatile UINT8	i2cflag;
 
@@ -65,7 +66,7 @@ void __attribute__((optimize("O0"))) TargetInit(void)
 	//   rGPBDAT = 0x07ff;
 	//  Delay(0);
 	init_key();
-	init_wtdog();
+	//init_wtdog();
 	init_i2c();
 }
 

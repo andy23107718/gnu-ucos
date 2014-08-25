@@ -3,6 +3,7 @@ NAME    : MMU.C
 DESC	  :
 Revision: 2002.2.28 ver 0.0
  ************************************************/
+#include "os_cpu.h"
 #include "2440addr.h"
 #include "2440lib.h"
 #include "2440slib.h"

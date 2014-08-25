@@ -68,6 +68,7 @@ void LcdBkLtSet(uint32 HiRatio);//lcd
 
 
 ///nandflash functions	(ramdom)read,write erase
+void 	nand_test(void);
 UINT8  	nand_writepage(UINT32 page_number,UINT8  *buffer,UINT32  size);
 UINT8  	nand_markbadblock(UINT32 block);
 UINT8  	nand_is_badblk(UINT32 block);
@@ -105,6 +106,8 @@ void 	wr24c02a(UINT8 wordAddr,UINT8 *buffer,UINT32 sizeofdate);
 void 	rd24c02a(UINT8 wordAddr,UINT8 *buffer,UINT32 sizeofdate);
 
 
+int 	readADC(INT8U channel);
+
 
 void 	ostickisr(void);
 void 	CLR_IF(void);
@@ -116,6 +119,7 @@ void 	eint4_7(void);
 
 void 	init_wtdog(void);
 
+void 	i2c_test(void);
 void 	i2c_isr(void);
 void 	init_i2c(void);
 

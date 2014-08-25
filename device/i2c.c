@@ -5,6 +5,22 @@
 
 unsigned char devAddr=0xa0;      //从设备AT24C02A的地址
 
+void 	i2c_test(void)
+{
+	UINT8 buf[32],i;
+
+	for(i = 0;i < 8;i ++)
+		buf[i]	= i;
+	wr24c02a(0x23,buf,4);
+	
+	for(i = 0;i < 8;i ++)
+		buf[i]	= 0;
+	rd24c02a(0x23,buf,4);
+
+	printf("%d %d %d %d\n",buf[0],buf[1],buf[2],buf[3]);	
+}
+
+
 //AT24C02A页写，当sizeofdate为1时，是字节写
 //输入参数依次为设备内存地址、IIC数据缓存数组和要写入的数据个数
 void __attribute__((optimize("O0"))) wr24c02a(UINT8 wordAddr,UINT8 *buffer,UINT32 sizeofdate )

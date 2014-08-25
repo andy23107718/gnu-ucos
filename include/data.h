@@ -1,3 +1,7 @@
+/** all the global variables
+included by ucos_ii.h **/
+
+
 
 OS_EXT	int 	rYear, rMonth,rDay,rDayOfWeek,rHour,rMinute,rSecond;
 OS_EXT	char 	*os_banner;
