@@ -123,27 +123,19 @@ void Task2(void *pdata)
 {
 	int i=0;
 
-	i2c_test();
-
-	for(i = 0;i < 3000;i ++){
+	/*for(i = 0;i < 3000;i ++){
 		printf("%x\r\n",readADC(2));
 		OSTimeDly(OS_TICKS_PER_SEC);
-	}
+	}*/
+	write_date(0x14,0x8,0x25,0x1,0x21,0x40,0x33);
+	read_date();
+	printf("year:%4d,month:%2d,day:%2d,week:%2d,hour:%2d,minute:%2d,second:%2d\r\n",
+			rYear, rMonth,rDay,rDayOfWeek,rHour,rMinute,rSecond);
 	while(1)
 	{
 		i++;
 		if(i>99)i=0;
 
-		if(rBCDYEAR==0x99)
-			rYear = 1999;
-		else
-			rYear    = (2000 + rBCDYEAR);
-		rMonth   = FROM_BCD(rBCDMON & 0x1f);
-		rDay		= FROM_BCD(rBCDDAY & 0x03f);
-		rDayOfWeek = rBCDDATE-1;
-		rHour    = FROM_BCD(rBCDHOUR & 0x3f);
-		rMinute     = FROM_BCD(rBCDMIN & 0x7f);
-		rSecond     = FROM_BCD(rBCDSEC & 0x7f);
 		OSTimeDly( 5 );
 		OSTimeDly(OS_TICKS_PER_SEC/5);
 	}
