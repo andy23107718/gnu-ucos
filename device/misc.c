@@ -50,3 +50,14 @@ void write_date(UINT8 year,UINT8 month,UINT8 day,UINT8 dayofweek,UINT8 hour,UINT
 	rBCDSEC  = second;            //秒
 	rRTCCON = 0;
 }
+
+void set_alarm(UINT8 year,UINT8 month,UINT8 day,UINT8 hour,UINT8 minute,UINT8 second)
+{
+	rALMYEAR = year;          //年
+	rALMMON = month;            //月
+	rALMDATE = day;           //日
+	rALMHOUR = hour;          //小时
+	rALMMIN = minute;             //分
+	rALMSEC = second;             //秒
+}
+

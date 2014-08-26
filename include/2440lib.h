@@ -122,10 +122,15 @@ void 	init_wtdog(void);
 void 	i2c_test(void);
 void 	i2c_isr(void);
 void 	init_i2c(void);
+void 	init_rtc(void);
+
+void	tick_rtc(void);
+void 	alarm_rtc(void);
 
 
 void	read_date(void);
 void	write_date(UINT8 year,UINT8 month,UINT8 day,UINT8 dayofweek,UINT8 hour,UINT8 minute,UINT8 second);
+void 	set_alarm(UINT8 year,UINT8 month,UINT8 day,UINT8 hour,UINT8 minute,UINT8 second);
 
 #ifdef __cplusplus
 }

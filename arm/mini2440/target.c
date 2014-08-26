@@ -68,6 +68,7 @@ void __attribute__((optimize("O0"))) TargetInit(void)
 	init_key();
 	//init_wtdog();
 	init_i2c();
+	init_rtc();
 }
 
 void Rtc_Init(void)
@@ -204,3 +205,28 @@ void init_i2c(void)
 	rIICSTAT = 0x10;
 	pIRQ_IIC = (UINT32)i2c_isr;
 }
+
+ //rRTCCON=0x00;  
+
+void init_rtc(void)
+{
+	rINTMSK &= ~( (1<<8) | (1<<30) );
+	pIRQ_RTC = (UINT32)alarm_rtc;
+	pIRQ_TICK=(UINT32)tick_rtc;
+
+	rTICNT=(0x7f)|0x80;    //使能中断   tick=127
+	rRTCALM = 0x41;     //RTC闹钟控制寄存器   //0x41表示使能RTC闹钟，以及使能秒时钟闹钟   
+}
+
+
+
+void	tick_rtc(void)
+{
+	printf("beat int\r\n");
+}
+
+void alarm_rtc(void)
+{
+	printf("alarm int\r\n");
+}
+
